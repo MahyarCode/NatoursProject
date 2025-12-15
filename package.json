@@ -1,0 +1,26 @@
+{
+    "name": "natours",
+    "version": "1.0.0",
+    "description": "learning Node, Express, MongoDB",
+    "main": "app.js",
+    "type": "module",
+    "scripts": {
+        "start": "nodemon app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MahyarCode/NatoursProject.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/MahyarCode/NatoursProject/issues"
+    },
+    "homepage": "https://github.com/MahyarCode/NatoursProject#readme",
+    "dependencies": {
+        "express": "^4.22.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.11"
+    }
+}
