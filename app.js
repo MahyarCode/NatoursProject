@@ -1,10 +1,14 @@
 import express from 'express';
 import fs from 'fs';
+import morgan from 'morgan';
 
 const app = express();
 
-const port = 3000;
+//TODO Middlewares
+app.use(morgan('dev'));
+app.use(express.json());
 
+//TODO Route Handlers
 const data = JSON.parse(
     fs.readFileSync(
         `./dev-data/data/tours-simple.json`,
@@ -12,9 +16,11 @@ const data = JSON.parse(
     )
 );
 
+//DESC Tour handlers
 const getAllTours = function (req, res) {
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: data.length,
         data,
     });
@@ -86,9 +92,7 @@ const deleteTour = function (req, res) {
     });
 };
 
-//TODO the next line is a Middleware
-app.use(express.json());
-
+//TODO Routes
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
 
@@ -96,7 +100,7 @@ app.use(express.json());
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
-//TODO the following code is the better version of above commented lines
+//DESC the following code is the better version of above commented lines
 app.route('/api/v1/tours')
     .get(getAllTours)
     .post(createTour);
@@ -106,6 +110,8 @@ app.route('/api/v1/tours/:id')
     .patch(updateTour)
     .delete(deleteTour);
 
+//TODO Start The Server
+const port = 3000;
 app.listen(port, () => {
     console.log(`App running on port ${port}...`);
 });
