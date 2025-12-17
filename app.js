@@ -15,6 +15,7 @@ app.use((req, res, next) => {
 });
 
 //TODO Route Handlers
+//TODO Route Handlers
 const data = JSON.parse(
     fs.readFileSync(
         `./dev-data/data/tours-simple.json`,
@@ -23,9 +24,11 @@ const data = JSON.parse(
 );
 
 //DESC Tour handlers
+//DESC Tour handlers
 const getAllTours = function (req, res) {
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         requestedAt: req.requestTime,
         results: data.length,
         data,
