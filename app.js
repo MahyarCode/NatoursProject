@@ -1,10 +1,20 @@
 import express from 'express';
 import fs from 'fs';
+import morgan from 'morgan';
 
 const app = express();
 
-const port = 3000;
+//TODO Middlewares
+app.use(morgan('dev'));
+app.use(express.json());
 
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    console.log(req.requestTime);
+    next();
+});
+
+//TODO Route Handlers
 const data = JSON.parse(
     fs.readFileSync(
         `./dev-data/data/tours-simple.json`,
@@ -12,9 +22,11 @@ const data = JSON.parse(
     )
 );
 
+//DESC Tour handlers
 const getAllTours = function (req, res) {
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: data.length,
         data,
     });
@@ -86,26 +98,68 @@ const deleteTour = function (req, res) {
     });
 };
 
-//TODO the next line is a Middleware
-app.use(express.json());
+//DESC User handlers
+const getAllUsers = function (req, res) {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined',
+    });
+};
 
-// app.get('/api/v1/tours', getAllTours);
-// app.post('/api/v1/tours', createTour);
+const createUser = function (req, res) {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined',
+    });
+};
 
-// app.get('/api/v1/tours/:id', getSingleTour);
-// app.patch('/api/v1/tours/:id', updateTour);
-// app.delete('/api/v1/tours/:id', deleteTour);
+const getUser = function (req, res) {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined',
+    });
+};
 
-//TODO the following code is the better version of above commented lines
-app.route('/api/v1/tours')
-    .get(getAllTours)
-    .post(createTour);
+const updateUser = function (req, res) {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined',
+    });
+};
 
-app.route('/api/v1/tours/:id')
+const deleteUser = function (req, res) {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet defined',
+    });
+};
+
+//TODO Routes
+
+const toursRoute = express.Router();
+const usersRoute = express.Router();
+
+toursRoute.route('/').get(getAllTours).post(createTour);
+
+toursRoute
+    .route('/:id')
     .get(getSingleTour)
     .patch(updateTour)
     .delete(deleteTour);
 
+usersRoute.route('/').get(getAllUsers).post(createUser);
+
+usersRoute
+    .route('/:id')
+    .get(getUser)
+    .patch(updateUser)
+    .delete(deleteUser);
+
+app.use('/api/v1/tours', toursRoute);
+app.use('/api/v1/users', usersRoute);
+
+//TODO Start The Server
+const port = 3000;
 app.listen(port, () => {
     console.log(`App running on port ${port}...`);
 });
