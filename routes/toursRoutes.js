@@ -6,7 +6,10 @@ const router = express.Router();
 router
     .route('/')
     .get(tour.getAllTours)
-    .post(tour.createTour);
+    .post(tour.checkBody, tour.createTour); //DESC this way, we can put multiple middleware for a single operation.
+
+//DESC the following middleware will check the id first (if we have the id param)
+router.param('id', tour.checkID);
 
 router
     .route('/:id')

@@ -7,6 +7,29 @@ const data = JSON.parse(
     )
 );
 
+export const checkID = function (req, res, next, val) {
+    console.log(`the id is: ${val}`);
+    if (val > data.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID',
+        });
+    }
+
+    next();
+};
+
+export const checkBody = function (req, res, next) {
+    if (req.body.name && req.body.price) {
+        next();
+    } else {
+        res.status(400).json({
+            status: 'fail',
+            message: 'bad request',
+        });
+    }
+};
+
 export const getAllTours = function (req, res) {
     res.status(200).json({
         status: 'success',
@@ -19,13 +42,6 @@ export const getAllTours = function (req, res) {
 
 export const getSingleTour = function (req, res) {
     const id = +req.params.id;
-
-    if (id > data.length) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID',
-        });
-    }
 
     const specifiedData = data.find((el) => el.id === id);
     res.status(200).json({
@@ -54,13 +70,6 @@ export const createTour = function (req, res) {
 };
 
 export const updateTour = function (req, res) {
-    if (+req.params.id > data.length) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID',
-        });
-    }
-
     res.status(200).json({
         status: 'success',
         data: {
@@ -70,13 +79,6 @@ export const updateTour = function (req, res) {
 };
 
 export const deleteTour = function (req, res) {
-    if (+req.params.id > data.length) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID',
-        });
-    }
-
     res.status(204).json({
         status: 'success',
         data: null,
