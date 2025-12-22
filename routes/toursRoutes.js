@@ -3,10 +3,15 @@ import * as tour from '../Controllers/tourController.js';
 
 const router = express.Router();
 
+// creating a middleware that shows top 5 cheapest tours
+router
+    .route('/top-5-cheap')
+    .get(tour.alias, tour.getAllTours);
+
 router
     .route('/')
     .get(tour.getAllTours)
-    .post(tour.createTour); //DESC this way, we can put multiple middleware for a single operation.
+    .post(tour.createTour);
 
 // //DESC the following middleware will check the id first (if we have the id param)
 // router.param('id', tour.checkID);

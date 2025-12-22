@@ -14,7 +14,6 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json());
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
-    console.log(req.requestTime);
     next();
 });
 //DESC the following line will set the root of the app, to the 'public' folder. So, we can access to the files in 'public' folder using browser.
