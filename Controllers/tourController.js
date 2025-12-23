@@ -23,7 +23,6 @@ export const getAllTours = async function (req, res) {
             .paginate();
 
         const tours = await features.query;
-        console.log(tours);
 
         res.status(200).json({
             status: 'success',
@@ -67,6 +66,7 @@ export const createTour = async function (req, res) {
             },
         });
     } catch (error) {
+        console.log('❌❌❌❌', error);
         res.status(400).json({
             status: 'fail',
             message: error,
@@ -104,6 +104,96 @@ export const deleteTour = async function (req, res) {
             data: null,
         });
     } catch (error) {
+        res.status(400).json({
+            status: 'fail',
+            message: error,
+        });
+    }
+};
+
+export const getTourStats = async function (req, res) {
+    try {
+        const pipeline = [
+            { $match: { ratingsAverage: { $gte: 4.0 } } },
+            {
+                $group: {
+                    _id: '$difficulty',
+                    numTours: { $sum: 1 },
+                    numRatings: {
+                        $sum: '$ratingsQuantity',
+                    },
+                    avgRating: { $avg: '$ratingsAverage' },
+                    minPrice: { $min: '$price' },
+                    maxPrice: { $max: '$price' },
+                    avgPrice: { $avg: '$price' },
+                },
+            },
+            {
+                $sort: { avgPrice: -1 },
+            },
+        ];
+        const stats = await Tour.aggregate(pipeline);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                stats,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: 'fail',
+            message: error,
+        });
+    }
+};
+
+export const getMonthlyPlan = async function (req, res) {
+    try {
+        const year = +req.params.year;
+
+        const pipeline = [
+            {
+                $unwind: '$startDates',
+            },
+            {
+                $match: {
+                    startDates: {
+                        $gte: new Date(`${year}-01-01`),
+                        $lte: new Date(`${year}-12-31`),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: { $month: '$startDates' },
+                    numTours: { $sum: 1 },
+                    tours: { $push: '$name' },
+                },
+            },
+            {
+                $addFields: { month: '$_id' },
+            },
+            {
+                $project: {
+                    _id: 0,
+                },
+            },
+            {
+                $sort: { numTours: -1 },
+            },
+        ];
+
+        const plan = await Tour.aggregate(pipeline);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                plan,
+            },
+        });
+    } catch (error) {
+        console.log('❌❌❌❌');
         res.status(400).json({
             status: 'fail',
             message: error,
