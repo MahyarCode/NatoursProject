@@ -5,7 +5,8 @@
     "main": "server.js",
     "type": "module",
     "scripts": {
-        "start": "nodemon server.js"
+        "start": "nodemon server.js",
+        "debug": "ndb server.js"
     },
     "repository": {
         "type": "git",
@@ -33,6 +34,7 @@
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-prettier": "^5.5.4",
         "eslint-plugin-react": "^7.37.5",
+        "ndb": "^1.1.5",
         "nodemon": "^3.1.11",
         "prettier": "^3.7.4"
     }

@@ -5,18 +5,14 @@ import APIfeatures from '../utilities/apiFeatures.js';
 export const alias = function (req, res, next) {
     req.query.limit = '5';
     req.query.sort = 'price,-ratingsAverage';
-    req.query.fields =
-        'name,price,ratingsAverage,difficulty';
+    req.query.fields = 'name,price,ratingsAverage,difficulty';
     next();
 };
 
 export const getAllTours = async function (req, res) {
     try {
         // EXECUTES QUERY
-        const features = new APIfeatures(
-            Tour.find(),
-            req.query,
-        )
+        const features = new APIfeatures(Tour.find(), req.query)
             .filter()
             .sort()
             .limitFields()
@@ -76,11 +72,10 @@ export const createTour = async function (req, res) {
 
 export const updateTour = async function (req, res) {
     try {
-        const tour = await Tour.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true },
-        );
+        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        });
 
         res.status(200).json({
             status: 'success',

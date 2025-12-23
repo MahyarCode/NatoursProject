@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
-
+import AppError from './utilities/appError.js';
+import { globalErrorHandling } from './Controllers/errorController.js';
 import tourRouter from './routes/toursRoutes.js';
 import userRouter from './routes/usersRoutes.js';
 
@@ -24,4 +25,17 @@ app.use(express.static('./public'));
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+//TODO Handling invalid routes (WHICH MUST BE WRITTEN AS THE LAST MIDDLEWARE)
+// '*' will acceptable for all of the http request methods
+app.all('*', (req, res, next) => {
+    // const err = new Error(
+    //     'cannot find ${req.originalUrl} on this server!',
+    // );
+    // err.status = 'fail';
+    // err.statusCode = 404;
+    next(new AppError(`cannot find ${req.originalUrl} on this server!`, 404));
+    //DESC anything we pass to the next() function, it is considered as error and immediately jumps to error middleware
+});
+
+app.use(globalErrorHandling);
 export default app;
