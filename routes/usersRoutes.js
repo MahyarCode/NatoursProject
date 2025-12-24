@@ -1,11 +1,11 @@
 import express from 'express';
 import * as user from '../Controllers/userController.js';
-import * as authentication from '../Controllers/authController.js';
+import * as auth from '../Controllers/authController.js';
 
 const router = express.Router();
 
-router.post('/signup', authentication.signup);
-router.post('/login', authentication.login);
+router.post('/signup', auth.signup);
+router.post('/login', auth.login);
 
 router.route('/').get(user.getAllUsers).post(user.createUser);
 

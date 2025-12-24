@@ -1,3 +1,4 @@
+import { appendFile } from 'fs';
 import AppError from '../utilities/appError.js';
 
 const sendErrorDev = (err, res) => {
@@ -48,6 +49,14 @@ const handleValidationErrorDB = function (err) {
     return new AppError(message, 400);
 };
 
+const handleJWTError = function () {
+    return new AppError('Invalid token! Please log in again', 401);
+};
+
+const handleJWTExpiredError = function () {
+    return new AppError('Session Expired! Please log in again', 401);
+};
+
 export const globalErrorHandling = function (err, req, res, next) {
     // app.use(with 4 arguments) is considered as error-handling middleware
 
@@ -60,6 +69,9 @@ export const globalErrorHandling = function (err, req, res, next) {
         if (err.name === 'CastError') err = handleCastErrorDB(err);
         if (err.code === 11000) err = handleDuplicateErrorDB(err);
         if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
+        if (err.name === 'JsonWebTokenError') err = handleJWTError();
+        if (err.name === 'TokenExpiredError') err = handleJWTExpiredError();
+
         sendErrorProd(err, res);
     }
 };
