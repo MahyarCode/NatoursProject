@@ -1,12 +1,19 @@
 import mongoose from 'mongoose';
 import 'dotenv/config';
+
+//TODO handling uncaught error:
+process.on('uncaughtException', (err) => {
+    console.log(err.name);
+    console.log(err.message);
+    process.exit(1);
+});
+
 import app from './app.js';
 
 const DB = process.env.DATABASE.replace(
     '<PASSWORD>',
     process.env.DATABASE_PASSWORD,
 );
-
 mongoose
     .connect(DB, {
         useNewUrlParser: true,
@@ -21,6 +28,15 @@ mongoose
 
 //TODO Start The Server
 const port = 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`App running on port ${port}...`);
+});
+
+//TODO handling unhandled error (from database for example):
+process.on('unhandledRejection', (err) => {
+    console.log(err.name);
+    console.log(err.message);
+    server.close(() => {
+        process.exit(1);
+    });
 });
