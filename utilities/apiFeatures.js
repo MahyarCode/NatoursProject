@@ -6,12 +6,7 @@ export default class APIfeatures {
 
     filter() {
         const queryObj = { ...this.queryString };
-        const excludeFields = [
-            'page',
-            'sort',
-            'limit',
-            'fields',
-        ];
+        const excludeFields = ['page', 'sort', 'limit', 'fields'];
         excludeFields.forEach((el) => delete queryObj[el]);
 
         let queryStr = JSON.stringify(queryObj);
@@ -26,15 +21,11 @@ export default class APIfeatures {
 
     sort() {
         if (this.queryString.sort) {
-            const sortedBy = this.queryString.sort
-                .split(',')
-                .join(' ');
+            const sortedBy = this.queryString.sort.split(',').join(' ');
 
             this.query = this.query.sort(sortedBy);
         } else {
-            this.query = this.query.sort(
-                '-ratingsQuantity',
-            );
+            this.query = this.query.sort('-ratingsQuantity');
         }
 
         return this;
@@ -42,9 +33,7 @@ export default class APIfeatures {
 
     limitFields() {
         if (this.queryString.fields) {
-            const fields = this.queryString.fields
-                .split(',')
-                .join(' ');
+            const fields = this.queryString.fields.split(',').join(' ');
             this.query = this.query.select(fields);
         } else {
             this.query = this.query.select('-__v');
