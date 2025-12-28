@@ -3,6 +3,7 @@ import Tour from '../models/tourModel.js';
 import APIfeatures from '../utilities/apiFeatures.js';
 import AppError from '../utilities/appError.js';
 import { catchAsync } from '../utilities/catchAsyncError.js';
+import User from '../models/userModel.js';
 
 export const alias = function (req, res, next) {
     req.query.limit = '5';

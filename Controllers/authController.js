@@ -12,27 +12,20 @@ const signToken = function (id) {
     });
 };
 
-export const signup = catchAsync(async (req, res, next) => {
-    const newUser = await User.create(
-        req.body,
-        //     {
-        //     name: req.body.name,
-        //     email: req.body.email,
-        //     role: req.body.role,
-        //     password: req.body.password,
-        //     passwordConfirm: req.body.passwordConfirm,
-        //     passwordChangedAt: req.body.passwordChangedAt,
-        // }
-    );
-
-    const token = signToken(newUser._id);
-    res.status(201).json({
+const createSendToken = function (user, statusCode, res) {
+    const token = signToken(user._id);
+    res.status(statusCode).json({
         status: 'success',
         token,
         data: {
-            user: newUser,
+            user,
         },
     });
+};
+
+export const signup = catchAsync(async (req, res, next) => {
+    const newUser = await User.create(req.body);
+    createSendToken(newUser, 201, res);
 });
 
 export const login = catchAsync(async function (req, res, next) {
@@ -49,14 +42,8 @@ export const login = catchAsync(async function (req, res, next) {
         return next(new AppError('Incorrect Email or Password', 401));
     }
 
-    console.log(user);
     // 3) if everything is ok, send token to client
-    const token = signToken(user._id);
-
-    res.status(200).json({
-        status: 'success',
-        token,
-    });
+    createSendToken(user, 200, res);
 });
 
 export const protect = catchAsync(async function (req, res, next) {
@@ -153,7 +140,7 @@ export const forgetPassword = catchAsync(async function (req, res, next) {
 });
 
 export const resetPassword = catchAsync(async function (req, res, next) {
-    // 1) get use based on the token
+    // 1) get user based on the token
     const hashedToken = crypto
         .createHash('sha256')
         .update(req.params.token)
@@ -177,10 +164,35 @@ export const resetPassword = catchAsync(async function (req, res, next) {
     // 3) update changePasswordAt property for the user
 
     // 4) log the user in, send JWT
-    const token = signToken(user._id);
+    createSendToken(user, 200, res);
+});
 
-    res.status(200).json({
-        status: 'success',
-        token,
-    });
+export const updatePassword = catchAsync(async function (req, res, next) {
+    // 1) Get user from collection
+    // const user = await User.findById(req.user.id)
+    console.log(req);
+
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const { id } = decoded;
+    const user = await User.findById({ _id: id }).select('+password');
+
+    const { password } = req.body;
+
+    // 2) check if POSTend current password is correct
+    if (user && (await user.correctPassword(password, user.password))) {
+        // 3) If so, update password
+        user.password = req.body.newPassword;
+        user.passwordConfirm = req.body.newPasswordConfirm;
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save();
+
+        // 4) Log user in, send JWT
+        createSendToken(user, 200, res);
+    } else {
+        return next(
+            new AppError('Token may be expired or password is incorrect'),
+        );
+    }
 });

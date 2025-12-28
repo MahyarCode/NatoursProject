@@ -8,6 +8,10 @@ router.post('/signup', auth.signup);
 router.post('/login', auth.login);
 router.post('/forgotPassword', auth.forgetPassword);
 router.patch('/resetPassword/:token', auth.resetPassword);
+router.patch('/updatePassword', auth.protect, auth.updatePassword);
+
+router.patch('/updateMe', auth.protect, user.updateMe);
+router.delete('/deleteMe', auth.protect, user.deleteMe);
 
 router.route('/').get(user.getAllUsers).post(user.createUser);
 
