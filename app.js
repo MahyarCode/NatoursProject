@@ -1,27 +1,89 @@
 import express from 'express';
+import { rateLimit } from 'express-rate-limit'; // to prevent brutforce attacks ( a global middleware )
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
+
 import morgan from 'morgan';
+
 import AppError from './utilities/appError.js';
+
 import { globalErrorHandling } from './Controllers/errorController.js';
 import tourRouter from './routes/toursRoutes.js';
 import userRouter from './routes/usersRoutes.js';
 
+import pug from 'pug';
+import path from 'path';
+import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 
-//TODO Middlewares
+// setting up the pug template
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
+//TODO Global Middlewares
+//DESC the following line will set the root of the app, to the 'public' folder. So, we can access to the files in 'public' folder using browser.
+//DESC like: localhost:3000/overview.html
+app.use(express.static(path.join(__dirname, 'public')));
+
+// set security HTTP headers
+app.use(helmet()); // in middleware we always should use callback function. the return value of helmet() is also a function.
+
+// selecting environment
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
-app.use(express.json());
+
+// DESC this limiter prevents the brutforce attack (limit request from the same API)
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+    message: 'Too many Request. Please try again in 15 minutes.',
+});
+app.use(limiter);
+
+// body parser, reader data from body into req.body
+app.use(express.json({ limit: '10kb' })); // limited the request size to utmost 10kb
+
+// TODO the body sanitization security will be written right after the body parser middleware
+//  Prevents MongoDB Operator Injection.
+app.use(mongoSanitize());
+
+// to sanitize user input coming from POST body, GET queries, and url params. (against XSS)
+app.use(xss());
+
+app.use(
+    hpp({
+        whitelist: [
+            'duration',
+            'ratingsQuantity',
+            'ratingsAverage',
+            'maxGroupSize',
+            'difficulty',
+            'price',
+        ],
+    }),
+);
+
+// test middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     next();
 });
-//DESC the following line will set the root of the app, to the 'public' folder. So, we can access to the files in 'public' folder using browser.
-//DESC like: localhost:3000/overview.html
-app.use(express.static('./public'));
 
 //TODO Routes
+app.get('/', (req, res) => {
+    res.status(200).render('base', {
+        tour: 'the forest hiker',
+        user: 'Mahyar',
+    });
+});
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 

@@ -1,0 +1,16 @@
+doctype html 
+html 
+    head 
+        title Natours | #{tour}
+        link(rel='stylesheet' href='css/style.css')
+        link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+
+    body 
+        h1 The park tour
+        h2= user
+        // this comment is visible in client's html
+        //- this comment is not visible in the client's html
+        - const x = 10 // this is pure javascript code which is not affects the output html and also we can use the value for future html values
+        
+        h3= 2 * x
+        p THis is just some text
