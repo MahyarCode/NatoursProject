@@ -3,8 +3,6 @@ import 'dotenv/config';
 
 //TODO handling uncaught error:
 process.on('uncaughtException', (err) => {
-    console.log(err.name);
-    console.log(err.message);
     process.exit(1);
 });
 
@@ -34,8 +32,6 @@ const server = app.listen(port, () => {
 
 //TODO handling unhandled error (from database for example):
 process.on('unhandledRejection', (err) => {
-    console.log(err.name);
-    console.log(err.message);
     server.close(() => {
         process.exit(1);
     });

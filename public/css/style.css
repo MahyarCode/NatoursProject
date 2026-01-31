@@ -156,8 +156,8 @@ body {
     linear,
     left top,
     right bottom,
-    from(rgba(125, 213, 111, 0.85)),
-    to(rgba(40, 180, 135, 0.85))
+    from(rgba(82, 214, 61, 0.85)),
+    to(rgba(11, 173, 122, 0.85))
   );
   background-image: linear-gradient(
     to bottom right,
@@ -830,6 +830,7 @@ body {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  justify-content: flex-end
 }
 .footer__nav li {
   margin-left: 1.5rem;
@@ -1239,8 +1240,8 @@ body {
   padding: 1.25rem 1.75rem;
   border: none;
   width: 100%;
-  background-color: #fff;
-  background-color: #f2f2f2;
+  background-color: #dddddd;
+  background-color: #dddddd;
   border-top: 3px solid transparent;
   border-bottom: 3px solid transparent;
   -webkit-transition: all 0.3s;

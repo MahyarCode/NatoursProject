@@ -1,14 +1,23 @@
 import express from 'express';
 import * as tour from '../Controllers/tourController.js';
 import * as auth from '../Controllers/authController.js';
+import reviewRouter from './reviewRoutes.js';
 
 const router = express.Router();
+
+router.use('/:tourId/reviews', reviewRouter);
 
 // creating a middleware that shows top 5 cheapest tours
 router.route('/top-5-cheap').get(tour.alias, tour.getAllTours);
 
 router.route('/tour-stats').get(tour.getTourStats);
 router.route('/monthly-plan/:year').get(tour.getMonthlyPlan);
+
+router
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(tour.getToursWithin);
+
+router.route('/distances/:latlng/unit/:unit').get(tour.getDistances);
 
 router.route('/').get(auth.protect, tour.getAllTours).post(tour.createTour);
 

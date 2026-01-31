@@ -1,16 +1,29 @@
 doctype html 
 html 
-    head 
-        title Natours | #{tour}
-        link(rel='stylesheet' href='css/style.css')
-        link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+    head
+        block head
+            meta(charset='UTF-8')
+            meta(name='viewport' content='width=device-width, initial-scale=1.0')  
+            link(rel='stylesheet' href='/css/style.css')
+            link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
+            link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+            title Natours | #{title}
 
     body 
-        h1 The park tour
-        h2= user
-        // this comment is visible in client's html
-        //- this comment is not visible in the client's html
-        - const x = 10 // this is pure javascript code which is not affects the output html and also we can use the value for future html values
-        
-        h3= 2 * x
-        p THis is just some text
+    // Header 
+    //- for class name only put dot(.) and write the class of the tag
+    include _header
+
+    // Content
+    block content 
+        h1 This the PlaceHolder page
+
+    // Footer
+    include _footer
+    
+    //- block addingScript
+
+    //- If you need external scripts from CDN, add them to CSP too
+    //- script(src='https://cdn.jsdelivr.net/npm/axios@1.13.2/dist/axios.min.js')
+    
+    script(type="module" src='/js/index.js')

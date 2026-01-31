@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
+import cookieParser from 'cookie-parser';
 
 import morgan from 'morgan';
 
@@ -12,6 +13,8 @@ import AppError from './utilities/appError.js';
 import { globalErrorHandling } from './Controllers/errorController.js';
 import tourRouter from './routes/toursRoutes.js';
 import userRouter from './routes/usersRoutes.js';
+import reviewRouter from './routes/reviewRoutes.js';
+import viewRouter from './routes/viewsRoutes.js';
 
 import pug from 'pug';
 import path from 'path';
@@ -32,8 +35,19 @@ app.set('views', path.join(__dirname, 'views'));
 //DESC like: localhost:3000/overview.html
 app.use(express.static(path.join(__dirname, 'public')));
 
-// set security HTTP headers
-app.use(helmet()); // in middleware we always should use callback function. the return value of helmet() is also a function.
+// 2) set security HTTP headers
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                'script-src-elem': [
+                    "'self'",
+                    "'sha256-ieoeWczDHkReVBsRBqaal5AFMlBtNjMzgwKvLqi/tSU='",
+                ],
+            },
+        },
+    }),
+);
 
 // selecting environment
 if (process.env.NODE_ENV === 'development') {
@@ -50,6 +64,8 @@ app.use(limiter);
 
 // body parser, reader data from body into req.body
 app.use(express.json({ limit: '10kb' })); // limited the request size to utmost 10kb
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // TODO the body sanitization security will be written right after the body parser middleware
 //  Prevents MongoDB Operator Injection.
@@ -74,18 +90,15 @@ app.use(
 // test middleware
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
+    // console.log(req.cookies);
     next();
 });
 
 //TODO Routes
-app.get('/', (req, res) => {
-    res.status(200).render('base', {
-        tour: 'the forest hiker',
-        user: 'Mahyar',
-    });
-});
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //TODO Handling invalid routes (WHICH MUST BE WRITTEN AS THE LAST MIDDLEWARE)
 // '*' will acceptable for all of the http request methods

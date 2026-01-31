@@ -1,32 +1,52 @@
-import { appendFile } from 'fs';
 import AppError from '../utilities/appError.js';
 
-const sendErrorDev = (err, res) => {
-    res.status(err.statusCode).json({
-        status: err.status,
-        error: err,
-        message: err.message,
-        stack: err.stack,
-    });
-};
-
-const sendErrorProd = (err, res) => {
-    // Operational, trusted error: send message to the client
-    if (err.isOperational) {
+const sendErrorDev = (err, req, res) => {
+    if (req.originalUrl.startsWith('/api')) {
         res.status(err.statusCode).json({
             status: err.status,
+            error: err,
             message: err.message,
+            stack: err.stack,
         });
     } else {
-        // Programming or other unknown error: don't leak any details to the client
-        // 1. log error
-        console.error('Error', err);
-
-        // 2. send generic message
-        res.status(500).json({
-            status: 'error',
-            message: 'something went wrong',
+        // Render website
+        res.status(err.statusCode).render('errorTemplate', {
+            title: 'Something went wrong',
+            msg: err.message,
         });
+    }
+};
+
+const sendErrorProd = (err, req, res) => {
+    // API error:
+    if (req.originalUrl.startsWith('/api')) {
+        // Operational, trusted error: send message to the client
+        if (err.isOperational) {
+            res.status(err.statusCode).json({
+                status: err.status,
+                message: err.message,
+            });
+        } else {
+            // send generic message
+            res.status(500).json({
+                status: 'error',
+                message: 'something went wrong',
+            });
+        }
+    } else {
+        if (err.isOperational) {
+            // Render website
+            res.status(err.statusCode).render('errorTemplate', {
+                title: 'Something went wrong',
+                msg: err.message,
+            });
+        } else {
+            // Render generic error for non-operational errors
+            res.status(500).render('errorTemplate', {
+                title: 'Something went wrong',
+                msg: 'Something went wrong',
+            });
+        }
     }
 };
 
@@ -64,7 +84,7 @@ export const globalErrorHandling = function (err, req, res, next) {
     err.status = err.status || 'error';
 
     if (process.env.NODE_ENV === 'development') {
-        sendErrorDev(err, res);
+        sendErrorDev(err, req, res);
     } else if (process.env.NODE_ENV === 'production') {
         if (err.name === 'CastError') err = handleCastErrorDB(err);
         if (err.code === 11000) err = handleDuplicateErrorDB(err);
@@ -72,6 +92,6 @@ export const globalErrorHandling = function (err, req, res, next) {
         if (err.name === 'JsonWebTokenError') err = handleJWTError();
         if (err.name === 'TokenExpiredError') err = handleJWTExpiredError();
 
-        sendErrorProd(err, res);
+        sendErrorProd(err, req, res);
     }
 };
