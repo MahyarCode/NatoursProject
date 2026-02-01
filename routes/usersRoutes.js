@@ -11,8 +11,14 @@ router.post('/forgotPassword', auth.forgetPassword);
 router.patch('/resetPassword/:token', auth.resetPassword);
 
 router.patch('/updatePassword', auth.protect, auth.updatePassword);
+router.patch(
+    '/updateMe',
+    auth.protect,
+    user.uploadUserPhoto,
+    user.resizeUserPhoto,
+    user.updateMe,
+);
 
-router.patch('/updateMe', auth.protect, user.updateMe);
 router.delete('/deleteMe', auth.protect, user.deleteMe);
 
 router.route('/').get(user.getAllUsers).post(user.createUser);

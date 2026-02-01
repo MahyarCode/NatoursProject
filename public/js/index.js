@@ -23,9 +23,14 @@ if (logoutBtn) {
 if (userData) {
     userData.addEventListener('submit', async function (e) {
         e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        await updateUserDataInProfile({ name, email });
+        const form = new FormData();
+        form.append('name', document.getElementById('name').value);
+        form.append('email', document.getElementById('email').value);
+        form.append('photo', document.getElementById('photo').files[0]);
+
+        console.log(form);
+
+        await updateUserDataInProfile(form);
     });
 }
 

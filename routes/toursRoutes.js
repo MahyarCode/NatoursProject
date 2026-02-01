@@ -27,7 +27,13 @@ router.route('/').get(auth.protect, tour.getAllTours).post(tour.createTour);
 router
     .route('/:id')
     .get(tour.getSingleTour)
-    .patch(tour.updateTour)
+    .patch(
+        auth.protect,
+        auth.restrictTo('admin', 'lead-guide'),
+        tour.uploadTourImages,
+        tour.resizeTourImages,
+        tour.updateTour,
+    )
     .delete(
         auth.protect,
         auth.restrictTo('admin', 'lead-guide'),

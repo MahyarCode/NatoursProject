@@ -1,5 +1,11 @@
 import nodemailer from 'nodemailer';
 
+//
+
+export class Email {
+    constructor() {}
+}
+
 const sendEmail = async function (options) {
     // 1) create a transporter
     const transporter = nodemailer.createTransport({
