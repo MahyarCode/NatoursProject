@@ -17,6 +17,8 @@ import reviewRouter from './routes/reviewRoutes.js';
 import viewRouter from './routes/viewsRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
 
+import compression from 'compression';
+
 import pug from 'pug';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
@@ -88,6 +90,8 @@ app.use(
         ],
     }),
 );
+
+app.use(compression());
 
 // test middleware
 app.use((req, res, next) => {

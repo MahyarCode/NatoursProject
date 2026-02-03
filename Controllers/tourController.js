@@ -36,8 +36,6 @@ export const uploadTourImages = upload.fields([
 // upload.array('images', 5)    req.files
 
 export const resizeTourImages = catchAsync(async function (req, res, next) {
-    console.log('ooomade to resize✅');
-    // console.log(req.files);
     if (!req.files.imageCover) return next();
 
     // 1) cover image:
@@ -69,7 +67,6 @@ export const resizeTourImages = catchAsync(async function (req, res, next) {
             req.body.images.push(filename);
         }),
     );
-    console.log('image is Created !!!!!');
     next();
 });
 
@@ -138,7 +135,6 @@ export const updateTour = catchAsync(async function (req, res, next) {
         new: true,
         runValidators: true,
     });
-    console.log('req.body: ', req.body);
     if (!tour) {
         return next(new AppError('No tour has founded', 404));
     }

@@ -103,9 +103,6 @@ const filterObj = function (obj, ...allowedItemToUpdate) {
 };
 
 export const updateMe = catchAsync(async function (req, res, next) {
-    console.log(req.file);
-    console.log(req.body);
-
     if (req.body.password || req.body.passwordConfirm) {
         return next(
             new AppError(

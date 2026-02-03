@@ -14,7 +14,6 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-console.log(process.env.DATABASE);
 const DB = process.env.DATABASE.replace(
     '<PASSWORD>',
     process.env.DATABASE_PASSWORD,
@@ -28,7 +27,6 @@ mongoose
         useUnifiedTopology: true,
     })
     .then((connection) => {
-        // console.log(connection.connections);
         console.log('DB Connection was successful');
     });
 
