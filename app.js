@@ -15,6 +15,7 @@ import tourRouter from './routes/toursRoutes.js';
 import userRouter from './routes/usersRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
 import viewRouter from './routes/viewsRoutes.js';
+import bookingRouter from './routes/bookingRoutes.js';
 
 import pug from 'pug';
 import path from 'path';
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 2) set security HTTP headers
 app.use(
     helmet({
+        // contentSecurityPolicy: false,
         contentSecurityPolicy: {
             directives: {
                 'script-src-elem': [
@@ -99,6 +101,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 //TODO Handling invalid routes (WHICH MUST BE WRITTEN AS THE LAST MIDDLEWARE)
 // '*' will acceptable for all of the http request methods
